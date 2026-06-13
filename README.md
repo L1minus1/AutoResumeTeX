@@ -1,4 +1,4 @@
-# autoResume
+# AutoResumeTex
 
 An AI-assisted resume tailoring pipeline. Paste a job description into vim,
 and the tool uses a local Ollama model to extract role-relevant content, fills
