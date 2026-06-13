@@ -42,6 +42,8 @@ Install Ollama with the package that matches your GPU. The base `ollama`
 package is CPU-only; if you have a GPU, use the appropriate variant so the
 model runs on it:
 
+While this tool has not been tested outside an Arch-Linux environment, it should work on any distribution.  Simply substitute the pacman commands and package names with the equivalents from your distribution.  This tool has not been tested in WSL, but if anyone tries this, let me know!
+
 ```bash
 sudo pacman -S ollama-cuda   # NVIDIA
 sudo pacman -S ollama-rocm   # AMD
@@ -99,7 +101,7 @@ passing `--no-pdf`.
 
 ```bash
 # 1. Clone the repository
-git clone <repo-url> autoResume
+git clone https://github.com/L1minus1/AutoResumeTeX.git autoResume
 cd autoResume
 
 # 2. Create and activate a virtual environment
@@ -162,6 +164,7 @@ path of your `.tex` file:
 # template_processor.py
 HARDCODED_FILENAME = "/home/youruser/documents/resume.tex"
 ```
+Alternatively, simply edit the template file in place and leave the hardcoded filname unchanged.
 
 ### 3.2 Prompt Template
 
