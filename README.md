@@ -130,7 +130,7 @@ All other imports (`argparse`, `json`, `logging`, `pathlib`, `subprocess`,
 ### 3.1 LaTeX Resume Template
 
 This tool is designed to tailor an existing resume to a specific job posting,
-not to generate a resume from scratch. Before using autoResume, you must edit
+not to generate a resume from scratch. Before using AutoResumeTex (ART), you must edit
 the included `.tex` template to contain your own personal information.
 
 Open the template in any text editor:
@@ -141,12 +141,12 @@ vim /path/to/resume.tex
 nano /path/to/resume.tex
 ```
 
-Replace every value that does not appear inside angle brackets (`<>`) with your
+Replace every placeholder value that does not appear inside angle brackets (`<>`) with your
 own information. This includes your name, contact details, education history,
-and any fixed experience entries that will not change between applications.
+and any other entries you wish to persist between applications.
 
 **Leave all `<PlaceholderName>` values exactly as they are.** These are the
-only parts of the template the tool modifies. On each run, autoResume reads the
+only parts of the template the tool modifies. On each run, ART reads the
 job description you provide and replaces these markers with content chosen to
 improve your callback odds for that specific role — relevant job titles,
 tailored skill categories, and a targeted objective statement. Everything else
@@ -173,7 +173,7 @@ the job description you provide and what JSON structure to return. The tool
 ships with a working example (`promptTemplate.md`) — read it before making any
 changes, as it is extensively commented.
 
-The only structural requirement is that the file contains exactly one instance
+The most important structural requirement is that the file contains exactly one instance
 of the string `<DescHere>`. At runtime, this marker is replaced with the full
 text of the job description you type into vim. The rest of the file is
 instructions and a JSON schema example that guide the model toward returning
@@ -190,11 +190,11 @@ default behaviour without passing CLI arguments every time.
 
 | File | Constant | Default | Description |
 |---|---|---|---|
-| `template_processor.py` | `HARDCODED_FILENAME` | *(must be set)* | Absolute path to your `.tex` resume template. **Required before first run.** |
+| `template_processor.py` | `HARDCODED_FILENAME` | *(must be set)* | Path to your `.tex` resume template. |
 | `template_processor.py` | `output_filename` | `resume.tex` | Name of the filled `.tex` file written to the working directory. |
 | `ollama_prompt.py` | `DEFAULT_HOST` | `http://localhost:11434` | Ollama server URL. Change if running Ollama on a remote machine. |
 | `ollama_prompt.py` | `DEFAULT_MODEL` | `qwen2.5-coder` | Model tag used when `--model` is not passed. |
-| `ollama_prompt.py` | `DEFAULT_TIMEOUT` | `180` | Request timeout in seconds. **CPU users should raise this to 600–900.** |
+| `ollama_prompt.py` | `DEFAULT_TIMEOUT` | `900` | Request timeout in seconds. **GPU users may consider reducing this.** |
 | `run_resume.py` | `DEFAULT_PROMPT_TEMPLATE` | `./promptTemplate.md` | Prompt template used when `-i` is not passed. |
 | `run_resume.py` | `DEFAULT_PDF_DIR` | `outputs` | Subdirectory of the working directory where PDFs are saved. |
 | `run_resume.py` | `TEMP_FILE_NAME` | `.resume_desc_tmp.md` | Name of the hidden temporary file opened in vim. |
@@ -219,7 +219,7 @@ python run_resume.py [options]
 | `-i`, `--input` | `./promptTemplate.md` | Path to the Markdown prompt template. Must contain `<DescHere>`. |
 | `--host` | `http://localhost:11434` | Ollama server base URL. |
 | `--model` | `qwen2.5-coder` | Ollama model tag. |
-| `--timeout` | `180` | HTTP request timeout in seconds. Increase for CPU-only machines. |
+| `--timeout` | `900` | HTTP request timeout in seconds. |
 
 **PDF options:**
 
@@ -280,7 +280,7 @@ python ollama_prompt.py [options]
 | `-o`, `--output` | `.` (cwd) | Output path. If a directory, the filename is derived from the input file stem. If an explicit `.json` path, it is used directly. |
 | `--host` | `http://localhost:11434` | Ollama server base URL. |
 | `--model` | `qwen2.5-coder` | Ollama model tag. |
-| `--timeout` | `180` | HTTP request timeout in seconds. |
+| `--timeout` | `900` | HTTP request timeout in seconds. |
 | `--temperature` | `0.1` | Sampling temperature (0.0–1.0). Lower values produce more consistent, deterministic JSON output. Rarely needs changing. |
 | `-v`, `--verbose` | off | Enable DEBUG-level logging. |
 
@@ -294,7 +294,7 @@ python ollama_prompt.py -i promptTemplate.md
 python ollama_prompt.py -i promptTemplate.md -o debug/output.json
 
 # Higher timeout for CPU, fully deterministic output
-python ollama_prompt.py -i promptTemplate.md --timeout 600 --temperature 0.0
+python ollama_prompt.py -i promptTemplate.md --timeout 900 --temperature 0.0
 ```
 
 ---
@@ -376,7 +376,7 @@ they are stripped before parsing. The response is then parsed with
 **This step is the slowest part of the pipeline**, particularly on CPU. A 3b
 model on a modern CPU typically takes 3–8 minutes. A 7b model may take
 10–20 minutes. The `--timeout` argument controls how long the HTTP client waits
-before giving up; set it generously.
+before giving up; set it generously if you are not using a GPU.
 
 ### Step 4 — JSON Saved to Disk
 
